@@ -60,4 +60,3 @@ func FromDomain(du login.Core) Mentor {
 		Password: du.Password,
 	}
 }
-

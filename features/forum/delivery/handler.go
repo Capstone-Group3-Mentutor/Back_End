@@ -20,8 +20,8 @@ func New(e *echo.Echo, ps forum.UseCaseInterface) {
 	}
 
 	e.POST("/forum/me", handler.AddPosting(), middleware.JWT([]byte(config.SECRET_JWT))) // REFERENSI
-	e.POST("/forum", handler.AddStatus(), middleware.JWT([]byte(config.SECRET_JWT)))
-	e.GET("/forum", handler.SelectAll(), middleware.JWT([]byte(config.SECRET_JWT)))
+	e.POST("/forum/me", handler.AddStatus(), middleware.JWT([]byte(config.SECRET_JWT)))
+	e.GET("/forum/me", handler.SelectAll(), middleware.JWT([]byte(config.SECRET_JWT)))
 
 }
 

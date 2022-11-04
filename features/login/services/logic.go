@@ -78,7 +78,7 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 			return login.Core{}, "", errors.New("wrong username or password")
 		}
 	} else if res.Role == "mentor" || res.Role == "mentee" {
-		//  Check password mentee / mentor
+		// Check password mentee / mentor
 		pass := login.Core{Password: res.Password}
 		check := bcrypt.CompareHashAndPassword([]byte(pass.Password), []byte(input.Password))
 		if check != nil {
@@ -92,15 +92,12 @@ func (usecase *authUsecase) Login(input login.Core) (login.Core, string, error) 
 		return login.Core{}, "", errors.New("wrong username or password")
 	}
 
-
 	if strings.Contains(input.Email, "admin") == true {
 		if res.Password != input.Password {
 			log.Error(errors.New("password not equal"))
 			return login.Core{}, "", errors.New("wrong username or password")
 		}
 	}
-
-
 
 	token, err := middlewares.CreateToken(int(res.ID), int(res.IdClass), res.Role)
 

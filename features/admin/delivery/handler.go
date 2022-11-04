@@ -115,7 +115,7 @@ func (ad *AdminDelivery) UpdateUserAdmin() echo.HandlerFunc {
 func (ad *AdminDelivery) DeleteUserMentee() echo.HandlerFunc {
 	return func(c echo.Context) error {
 
-		id:= c.Param("id_user")
+		id := c.Param("id_user")
 		cnv, _ := strconv.Atoi(id)
 
 		err := ad.adminUsecase.DeleteUserMentee(uint(cnv), c)
@@ -129,7 +129,7 @@ func (ad *AdminDelivery) DeleteUserMentee() echo.HandlerFunc {
 func (ad *AdminDelivery) DeleteUserMentor() echo.HandlerFunc {
 	return func(c echo.Context) error {
 
-		id:= c.Param("id_user")
+		id := c.Param("id_user")
 		cnv, _ := strconv.Atoi(id)
 
 		err := ad.adminUsecase.DeleteUserMentor(uint(cnv), c)
@@ -139,4 +139,3 @@ func (ad *AdminDelivery) DeleteUserMentor() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, helper.SuccessResponseNoData("Delete Success"))
 	}
 }
-

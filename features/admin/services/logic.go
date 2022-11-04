@@ -11,6 +11,7 @@ import (
 	"unicode"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type adminUsecase struct {
@@ -33,26 +34,26 @@ func (au *adminUsecase) AddUser(input admin.UserCore, c echo.Context) (admin.Use
 	}
 
 	// CEK KONDISI EMAIL
-	if len(input.Email) < 8 || len(input.Email) > 40  {
+	if len(input.Email) < 8 || len(input.Email) > 40 {
 		return admin.UserCore{}, errors.New("input not valid")
 	} else if strings.Contains(input.Email, "@") == false && strings.Contains(input.Email, ".") == false {
 		return admin.UserCore{}, errors.New("input not valid")
-	} 
+	}
 
 	// CEK KONDISI NAMA
-	if len(input.Name) < 5 || len(input.Name) > 50{
+	if len(input.Name) < 5 || len(input.Name) > 50 {
 		return admin.UserCore{}, errors.New("input not valid")
 	}
 	var upper, lower, number, sChar int
 	for _, v := range input.Name {
 		if unicode.IsUpper(v) == true {
-			upper+=1
-		} else if unicode.IsLower(v) ==  true {
+			upper += 1
+		} else if unicode.IsLower(v) == true {
 			lower += 1
 		} else if unicode.IsNumber(v) == true {
-			number+=1
-		} else{
-			sChar+=1
+			number += 1
+		} else {
+			sChar += 1
 		}
 	}
 
@@ -66,15 +67,14 @@ func (au *adminUsecase) AddUser(input admin.UserCore, c echo.Context) (admin.Use
 		return admin.UserCore{}, errors.New("input not valid")
 	}
 
-
 	// CEK KELAS TERSEDIA
 	idClass := uint(input.IdClass)
 	_, err := au.adminRepo.GetClass(idClass)
 	if err != nil {
 		return admin.UserCore{}, errors.New("input not valid")
 	}
-
-
+	generate, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+	input.Password = string(generate)
 	if input.Role == "mentee" {
 		res, err := au.adminRepo.InsertMentee(input)
 		if err != nil {
@@ -96,7 +96,7 @@ func (au *adminUsecase) AddUser(input admin.UserCore, c echo.Context) (admin.Use
 func (au *adminUsecase) GetAllUser(c echo.Context) ([]admin.UserCore, []admin.UserCore, error) {
 	_, _, role := middlewares.ExtractToken(c)
 	if role != "admin" {
-		return []admin.UserCore{}, []admin.UserCore{},errors.New("user not admin")
+		return []admin.UserCore{}, []admin.UserCore{}, errors.New("user not admin")
 	}
 
 	resMentee, resMentor, err := au.adminRepo.GetAllUser()
@@ -139,7 +139,7 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, c echo.Context) (a
 		return admin.UserCore{}, errors.New("user not admin")
 	}
 
-	if input.Role == "mentor"{
+	if input.Role == "mentor" {
 		res, err := au.adminRepo.EditUserMentor(input)
 		if err != nil {
 			return admin.UserCore{}, errors.New("error in database")
@@ -155,7 +155,7 @@ func (au *adminUsecase) UpdateUserAdmin(input admin.UserCore, c echo.Context) (a
 	return admin.UserCore{}, nil
 }
 
-func (au *adminUsecase) DeleteUserMentee(id uint, c echo.Context) (error) {
+func (au *adminUsecase) DeleteUserMentee(id uint, c echo.Context) error {
 	_, _, role := middlewares.ExtractToken(c)
 	if role != "admin" {
 		return errors.New("user not admin")
@@ -169,7 +169,7 @@ func (au *adminUsecase) DeleteUserMentee(id uint, c echo.Context) (error) {
 	return nil
 }
 
-func (au *adminUsecase) DeleteUserMentor(id uint, c echo.Context) (error) {
+func (au *adminUsecase) DeleteUserMentor(id uint, c echo.Context) error {
 	_, _, role := middlewares.ExtractToken(c)
 	if role != "admin" {
 		return errors.New("user not admin")
